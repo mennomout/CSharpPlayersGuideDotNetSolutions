@@ -25,6 +25,7 @@ using ChallengesPart1Level5;
 using ChallengesPart1Level6;
 using ChallengesPart1Level7;
 using Helpers;
+using Challenges.Part_2.Level_26;
 
 namespace CSharpPlayersGuideDotNetBook;
 
@@ -55,7 +56,8 @@ public class Book
         new Level22(),
         new Level23(),
         new Level24(),
-        new Level25()];
+        new Level25(),
+        new Level26()];
 
     public void Open()
     {
