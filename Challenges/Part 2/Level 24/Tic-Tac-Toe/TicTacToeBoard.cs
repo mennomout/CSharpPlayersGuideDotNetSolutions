@@ -26,41 +26,26 @@ public class TicTacToeBoard
     {
         winner = null;
 
-        if (Tiles[0].Symbol != null && Tiles[0].Symbol == Tiles[3].Symbol && Tiles[0].Symbol == Tiles[6].Symbol)
+        // Check columns for a winner
+        for (int i = 0; i <= 3; i++)
         {
-            winner = Tiles[0].Symbol;
+            if (Tiles[i].Symbol != null && Tiles[i].Symbol == Tiles[i + 3].Symbol && Tiles[i].Symbol == Tiles[i + 6].Symbol)
+            {
+                winner = Tiles[i].Symbol;
 
-            return true;
+                return true;
+            }
         }
-        else if (Tiles[1].Symbol != null && Tiles[1].Symbol == Tiles[4].Symbol && Tiles[0].Symbol == Tiles[7].Symbol)
-        {
-            winner = Tiles[1].Symbol;
 
-            return true;
-        }
-        else if (Tiles[2].Symbol != null && Tiles[2].Symbol == Tiles[5].Symbol && Tiles[0].Symbol == Tiles[8].Symbol)
+        // Check rows for a winner.
+        for (int i = 0; i <= 6; i += 3)
         {
-            winner = Tiles[2].Symbol;
+            if (Tiles[i].Symbol != null && Tiles[i].Symbol == Tiles[i + 1].Symbol && Tiles[i].Symbol == Tiles[i + 2].Symbol)
+            {
+                winner = Tiles[i].Symbol;
 
-            return true;
-        }
-        else if (Tiles[0].Symbol != null && Tiles[0].Symbol == Tiles[1].Symbol && Tiles[0].Symbol == Tiles[2].Symbol)
-        {
-            winner = Tiles[0].Symbol;
-
-            return true;
-        }
-        else if (Tiles[3].Symbol != null && Tiles[3].Symbol == Tiles[4].Symbol && Tiles[3].Symbol == Tiles[5].Symbol)
-        {
-            winner = Tiles[3].Symbol;
-
-            return true;
-        }
-        else if (Tiles[6].Symbol != null && Tiles[6].Symbol == Tiles[7].Symbol && Tiles[6].Symbol == Tiles[8].Symbol)
-        {
-            winner = Tiles[2].Symbol;
-
-            return true;
+                return true;
+            }
         }
 
         return false;

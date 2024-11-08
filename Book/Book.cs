@@ -6,6 +6,7 @@ using Challenges.Part_1.Level_13;
 using Challenges.Part_1.Level_14;
 using Challenges.Part_1.Level_8;
 using Challenges.Part_1.Level_9;
+using Challenges.Part_2.Level_25;
 using Challenges.Part_2.Level_15;
 using Challenges.Part_2.Level_16;
 using Challenges.Part_2.Level_17;
@@ -53,7 +54,8 @@ public class Book
         new Level21(),
         new Level22(),
         new Level23(),
-        new Level24()];
+        new Level24(),
+        new Level25()];
 
     public void Open()
     {
@@ -80,7 +82,11 @@ public class Book
                         Console.WriteLine($"Thank you for playing {challenge.Name}, press 't' to try again or 'q' to quit to the challenge overview.");
                         key = InputHelper.GetProvidedOptionsChoiceFromEnum<ConsoleKey>([ConsoleKey.T, ConsoleKey.Q]);
                         Console.Clear();
-                        challenge.Run();
+
+                        if (key != ConsoleKey.Q)
+                        {
+                            challenge.Run();
+                        }
                     }
                 }
                 else
