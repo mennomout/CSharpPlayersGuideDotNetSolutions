@@ -28,6 +28,8 @@ using Helpers;
 using Challenges.Part_2.Level_26;
 using Challenges.Part_2.Level_27;
 using Challenges.Part_2.Level_28;
+using Challenges.Part_2.Level_29;
+using Challenges.Part_2.Level30;
 
 namespace CSharpPlayersGuideDotNetBook;
 
@@ -61,7 +63,9 @@ public class Book
         new Level25(),
         new Level26(),
         new Level27(),
-        new Level28()];
+        new Level28(),
+        new Level29(),
+        new Level30()];
 
     public void Open()
     {
@@ -85,6 +89,7 @@ public class Book
 
                     while (key != ConsoleKey.Q)
                     {
+                        Console.ResetColor();
                         Console.WriteLine($"Thank you for playing {challenge.Name}, press 't' to try again or 'q' to quit to the challenge overview.");
                         key = InputHelper.GetProvidedOptionsChoiceFromEnum<ConsoleKey>([ConsoleKey.T, ConsoleKey.Q]);
                         Console.Clear();
