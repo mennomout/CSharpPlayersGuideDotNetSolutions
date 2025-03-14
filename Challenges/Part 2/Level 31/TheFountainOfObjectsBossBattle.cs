@@ -1,50 +1,47 @@
-﻿namespace Challenges.Part_2.Level_31;
+﻿using Challenges.Part_2.Level_31.Rooms;
+using Helpers;
+using Helpers.Global_Enums;
 
-public class TheFountainOfObjectsBossBattle() : Challenge("The Fountain of Objects (Boss Battle)")
+namespace Challenges.Part_2.Level_31;
+
+public class TheFountainOfObjectsBossBattle() : Challenge("The Fountain of Objects Game")
 {
     public override void Run(object[]? parameters = null)
     {
-
-    }
-}
-
-// this approach without a multi dimensional array seems much more complex
-// after initialisation it should be easy to work with however
-// though what if a room changes position? maybe just change the type?
-// the type is not decalred inside the room, but since we work with the abstract parent...
-// if it changes position then another room changes as well
-// what if both rooms simply become another type without their base class properties changing at all
-public class Dungeon
-{
-    public List<Room> Rooms { get; set; } = [];
-
-    public Dungeon(int x, int y)
-    {
-        for (int yAxis = 0; yAxis < y; yAxis++)
+        Dungeon dungeon = new(4, 4);
+        Coordinates playerCoordinates = new(0, 0);
+        
+        if (!dungeon.TryFindRoomByType(typeof(FountainRoom), out BaseRoom? fountainRoom))
         {
-            for (int xAxis = 0; xAxis < x; xAxis++)
+            Console.WriteLine("Something went wrong and the dungeon was not configured properly. No fountain room was created during initialisation of the dungeon or it could not be found.");
+
+            return;
+        }
+
+        while (!((FountainRoom)fountainRoom!).IsActivated)
+        {
+            if (dungeon.TryFindRoomByCoordinates(playerCoordinates, out BaseRoom? room))
             {
-                Rooms.Add(new(new(xAxis, yAxis)));
-            }
-        }
+                Console.Clear();
+                Console.WriteLine(room!.Description);
+                Console.WriteLine($"Your position: ({playerCoordinates.X}, {playerCoordinates.Y})");
 
-        foreach (var room in Rooms)
-        {
+                var direction = InputHelper.GetChoiceFromEnum<DirectionEnum>();
+
+                Coordinates nextRoomCoordinates = direction switch
+                {
+                    DirectionEnum.Up => new(playerCoordinates.X, playerCoordinates.Y - 1),
+                    DirectionEnum.Down => new(playerCoordinates.X, playerCoordinates.Y + 1),
+                    DirectionEnum.Left => new(playerCoordinates.X - 1, playerCoordinates.Y),
+                    DirectionEnum.Right => new(playerCoordinates.X + 1, playerCoordinates.Y),
+                };
+
+                if (dungeon.IsValidCoordinate(nextRoomCoordinates))
+                {
+                    playerCoordinates = nextRoomCoordinates;
+                    ((FountainRoom)fountainRoom).IsActivated = fountainRoom.Coordinates == playerCoordinates;
+                }
+            }    
         }
     }
 }
-
-public class Room(Coordinates coordinates)
-{
-    private readonly List<Room> _adjacentRooms = [];
-
-    public Room(Coordinates coordinates, List<Room> adjacentRooms) : this(coordinates)
-    {
-        Coordinates = coordinates;
-        _adjacentRooms = adjacentRooms;
-    }
-
-    public Coordinates Coordinates { get; } = coordinates;
-}
-
-public record Coordinates(int X, int Y);
