@@ -9,7 +9,7 @@ public class TheFountainOfObjectsBossBattle() : Challenge("The Fountain of Objec
     public override void Run(object[]? parameters = null)
     {
         Dungeon dungeon = new(4, 4);
-        Coordinates playerCoordinates = new(0, 0);
+        int playerPosition = 0;
         
         if (!dungeon.TryFindRoomByType(typeof(FountainRoom), out BaseRoom? fountainRoom))
         {
@@ -20,26 +20,28 @@ public class TheFountainOfObjectsBossBattle() : Challenge("The Fountain of Objec
 
         while (!((FountainRoom)fountainRoom!).IsActivated)
         {
-            if (dungeon.TryFindRoomByCoordinates(playerCoordinates, out BaseRoom? room))
+            if (dungeon.GetRoom(playerPosition) is BaseRoom room)
             {
                 Console.Clear();
                 Console.WriteLine(room!.Description);
-                Console.WriteLine($"Your position: ({playerCoordinates.X}, {playerCoordinates.Y})");
+                Console.WriteLine($"Your position: ");
+                room.Enter(dungeon);
+                dungeon.GetAdjacentRooms(room);
 
                 var direction = InputHelper.GetChoiceFromEnum<DirectionEnum>();
 
-                Coordinates nextRoomCoordinates = direction switch
+                // This should be moved inside the dungeon and check if the left and right rooms arn't on a different row using modulo.
+                int nextRoomIndex = direction switch
                 {
-                    DirectionEnum.Up => new(playerCoordinates.X, playerCoordinates.Y - 1),
-                    DirectionEnum.Down => new(playerCoordinates.X, playerCoordinates.Y + 1),
-                    DirectionEnum.Left => new(playerCoordinates.X - 1, playerCoordinates.Y),
-                    DirectionEnum.Right => new(playerCoordinates.X + 1, playerCoordinates.Y),
+                    DirectionEnum.Up => playerPosition - dungeon.XLenght,
+                    DirectionEnum.Down => playerPosition + dungeon.XLenght,
+                    DirectionEnum.Left => playerPosition - 1,
+                    DirectionEnum.Right => playerPosition + 1,
                 };
 
-                if (dungeon.IsValidCoordinate(nextRoomCoordinates))
+                if (dungeon.IsInBounds(nextRoomIndex))
                 {
-                    playerCoordinates = nextRoomCoordinates;
-                    ((FountainRoom)fountainRoom).IsActivated = fountainRoom.Coordinates == playerCoordinates;
+                    playerPosition = nextRoomIndex;
                 }
             }    
         }

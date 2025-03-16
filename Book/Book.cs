@@ -9,7 +9,7 @@ public class Book
     private static readonly IEnumerable<Type>? _levels = Assembly.GetAssembly(typeof(BaseLevel))?.GetTypes().Where(static x => x.BaseType == typeof(BaseLevel));
     public static List<BaseLevel?>? Levels => _levels?.Select(x => (BaseLevel?)Assembly.GetAssembly(typeof(BaseLevel))?.CreateInstance(x.FullName ?? string.Empty))?.OrderBy(x => x?.Id).ToList();
 
-    public void Open()
+    public void Open(string challengeName = "")
     {
         string? input = string.Empty;
 
@@ -17,11 +17,21 @@ public class Book
         {
             try
             {
-                DisplayChallenges();
-                Console.WriteLine("Enter the name of the challenge you would like to see the answer to or type 'quit' to close the program.");
+                Challenge? challenge = null;
 
-                input = InputHelper.GetInputOrDefault<string>();
-                Challenge? challenge = GetChallenge(input);
+                // This if/else allows for a challenge to be executed directly for faster debugging / testing.
+                if (string.IsNullOrWhiteSpace(challengeName))
+                {
+                    DisplayChallenges();
+                    Console.WriteLine("Enter the name of the challenge you would like to see the answer to or type 'quit' to close the program.");
+
+                    input = InputHelper.GetInputOrDefault<string>();
+                    challenge = GetChallenge(input);
+                }
+                else
+                {
+                    challenge = GetChallenge(challengeName);
+                }
 
                 if (challenge != null)
                 {

@@ -2,4 +2,3 @@
 
 Book CSharpPlayersGuide = new();
 CSharpPlayersGuide.Open();
-
