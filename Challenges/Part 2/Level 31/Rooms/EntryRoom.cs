@@ -4,6 +4,5 @@ public class EntryRoom() : BaseRoom("The entry room", "You can sense light comin
 {
     public override void Enter(Dungeon dungeon)
     {
-        return;
     }
 }

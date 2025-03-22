@@ -19,7 +19,7 @@ public class Book
             {
                 Challenge? challenge = null;
 
-                // This if/else allows for a challenge to be executed directly for faster debugging / testing.
+                // This allows for a challenge to be executed directly for faster debugging / testing.
                 if (string.IsNullOrWhiteSpace(challengeName))
                 {
                     DisplayChallenges();

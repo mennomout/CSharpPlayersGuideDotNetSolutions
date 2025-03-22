@@ -1,5 +1,5 @@
 ﻿using Challenges.Part_2.Level_31.Rooms;
-using Helpers;
+using Helpers.Extensions;
 
 namespace Challenges.Part_2.Level_31;
 
@@ -22,6 +22,10 @@ public class Dungeon
                 {
                     Rooms.Add(new FountainRoom());
                 }
+                else if (xAxis == 3 && yAxis == 3)
+                {
+                    Rooms.Add(new PitRoom());
+                }
                 else
                 {
                     Rooms.Add(new EmptyRoom());
@@ -30,12 +34,46 @@ public class Dungeon
         }
     }
 
-
     public int XLenght { get; init; }
     public int YLenght { get; init; }
     public List<BaseRoom> Rooms { get; private set; } = [];
+    public int PlayerPosition { get; private set; }
 
-    public BaseRoom? GetRoom(int index) => IsInBounds(index) ? Rooms[index] : null;
+    public BaseRoom? GetPlayerRoom()
+    {
+        if (!IsInBounds(PlayerPosition))
+        {
+            return null;
+        }
+
+        BaseRoom playerRoom = Rooms[PlayerPosition];
+        bool nearPit = GetAdjacentRooms(playerRoom).Any(x => x is PitRoom);
+
+        if (nearPit)
+        {
+            Console.WriteLine("You feel a draft. There is a pit in a nearby room.");
+        }
+
+        return playerRoom;
+    }
+
+    public FountainRoom? GetFountainRoom() => Rooms.FirstOrDefault(x => x is FountainRoom) as FountainRoom;
+
+    public bool IsInBounds(int index) => index >= 0 && index < Rooms.Count;
+
+    public bool IsLegalMove(BaseRoom currentRoom, int index) => IsInBounds(index) && GetAdjacentRooms(currentRoom).Contains(Rooms[index]);
+
+    public bool TryMovePlayer(int newPlayerPosition)
+    {
+        if (!IsInBounds(newPlayerPosition))
+        {
+            return false;
+        }
+
+        PlayerPosition = newPlayerPosition;
+
+        return true;
+    }
 
     public bool TryFindRoomByType(Type type, out BaseRoom? room)
     {
@@ -43,8 +81,6 @@ public class Dungeon
 
         return room != null;
     }
-
-    public bool IsInBounds(int index) => index >= 0 && index < Rooms.Count;
 
     public IList<BaseRoom> GetAdjacentRooms(BaseRoom room)
     {

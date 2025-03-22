@@ -9,41 +9,52 @@ public class TheFountainOfObjectsBossBattle() : Challenge("The Fountain of Objec
     public override void Run(object[]? parameters = null)
     {
         Dungeon dungeon = new(4, 4);
-        int playerPosition = 0;
+        FountainRoom? fountainRoom = dungeon.GetFountainRoom();
         
-        if (!dungeon.TryFindRoomByType(typeof(FountainRoom), out BaseRoom? fountainRoom))
+        if (fountainRoom == null)
         {
             Console.WriteLine("Something went wrong and the dungeon was not configured properly. No fountain room was created during initialisation of the dungeon or it could not be found.");
 
             return;
         }
 
-        while (!((FountainRoom)fountainRoom!).IsActivated)
+        while (!fountainRoom.IsActivated)
         {
-            if (dungeon.GetRoom(playerPosition) is BaseRoom room)
+            Console.Clear();
+
+            if (dungeon.GetPlayerRoom() is BaseRoom room)
             {
-                Console.Clear();
-                Console.WriteLine(room!.Description);
                 Console.WriteLine($"Your position: ");
+                Console.WriteLine(room.Description);
+
+                if (room is PitRoom)
+                {
+                    break;
+                }
+
                 room.Enter(dungeon);
-                dungeon.GetAdjacentRooms(room);
+                int nextRoomIndex = GetNextRoomIndex(dungeon);
 
-                var direction = InputHelper.GetChoiceFromEnum<DirectionEnum>();
-
-                // This should be moved inside the dungeon and check if the left and right rooms arn't on a different row using modulo.
-                int nextRoomIndex = direction switch
+                while (!dungeon.TryMovePlayer(nextRoomIndex))
                 {
-                    DirectionEnum.Up => playerPosition - dungeon.XLenght,
-                    DirectionEnum.Down => playerPosition + dungeon.XLenght,
-                    DirectionEnum.Left => playerPosition - 1,
-                    DirectionEnum.Right => playerPosition + 1,
-                };
+                    Console.WriteLine("You cannot move there, try another direction.");
 
-                if (dungeon.IsInBounds(nextRoomIndex))
-                {
-                    playerPosition = nextRoomIndex;
+                    nextRoomIndex = GetNextRoomIndex(dungeon);
                 }
             }    
         }
+    }
+
+    private int GetNextRoomIndex(Dungeon dungeon)
+    {
+        var direction = InputHelper.GetChoiceFromEnum<DirectionEnum>();
+
+        return direction switch
+        {
+            DirectionEnum.Up => dungeon.PlayerPosition - dungeon.XLenght,
+            DirectionEnum.Down => dungeon.PlayerPosition + dungeon.XLenght,
+            DirectionEnum.Left => dungeon.PlayerPosition - 1,
+            DirectionEnum.Right => dungeon.PlayerPosition + 1,
+        };
     }
 }

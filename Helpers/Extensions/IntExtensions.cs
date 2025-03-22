@@ -1,6 +1,6 @@
-﻿namespace Helpers;
+﻿namespace Helpers.Extensions;
 
-public static class MathHelper
+public static class IntExtensions
 {
     public static bool IsRemainderNotZero(this int i, int divider) => i % divider != 0;
 }
