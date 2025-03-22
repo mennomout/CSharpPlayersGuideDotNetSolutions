@@ -14,22 +14,7 @@ public class Dungeon
         {
             for (int xAxis = 0; xAxis < x; xAxis++)
             {
-                if (xAxis == 0 && yAxis == 0)
-                {
-                    Rooms.Add(new EntryRoom());
-                }
-                else if (xAxis == (x - 1) / 2 && yAxis == (y - 1) / 2)
-                {
-                    Rooms.Add(new FountainRoom());
-                }
-                else if (xAxis == 3 && yAxis == 3)
-                {
-                    Rooms.Add(new PitRoom());
-                }
-                else
-                {
-                    Rooms.Add(new EmptyRoom());
-                }
+                Rooms.Add(new EmptyRoom());
             }
         }
     }
@@ -46,21 +31,14 @@ public class Dungeon
             return null;
         }
 
-        BaseRoom playerRoom = Rooms[PlayerPosition];
-        bool nearPit = GetAdjacentRooms(playerRoom).Any(x => x is PitRoom);
-
-        if (nearPit)
-        {
-            Console.WriteLine("You feel a draft. There is a pit in a nearby room.");
-        }
-
-        return playerRoom;
+        return Rooms[PlayerPosition];
     }
 
     public FountainRoom? GetFountainRoom() => Rooms.FirstOrDefault(x => x is FountainRoom) as FountainRoom;
 
     public bool IsInBounds(int index) => index >= 0 && index < Rooms.Count;
 
+    // This is bugged. GetAdjacentRooms also returns rooms that are diagonal but those are not legal to move to. It's not a big issue since the input should not allow for diagonal choices at the moment.
     public bool IsLegalMove(BaseRoom currentRoom, int index) => IsInBounds(index) && GetAdjacentRooms(currentRoom).Contains(Rooms[index]);
 
     public bool TryMovePlayer(int newPlayerPosition)
@@ -86,7 +64,7 @@ public class Dungeon
     {
         var index = Rooms.IndexOf(room);
         var adjacentRooms = new List<BaseRoom>();
-         
+
         // Left room 
         if (index - 1 >= 0 && index.IsRemainderNotZero(XLenght)) adjacentRooms.Add(Rooms[index - 1]);
 
@@ -106,18 +84,67 @@ public class Dungeon
         }
 
         // Top room
-        if (index - XLenght >= 0) 
+        if (index - XLenght >= 0)
         {
             adjacentRooms.Add(Rooms[index - XLenght]);
 
             // Top left room. 
             if (index - (XLenght + 1) >= 0 && (index - XLenght).IsRemainderNotZero(XLenght)) adjacentRooms.Add(Rooms[index - (XLenght + 1)]);
-            
+
             // Top right room. 
             if ((index - (XLenght - 1)).IsRemainderNotZero(XLenght)) adjacentRooms.Add(Rooms[index - (XLenght - 1)]);
         }
 
         return adjacentRooms;
+    }
+
+    public void SeedRooms(SizeEnum sizeEnum)
+    {
+        Rooms[0] = new EntryRoom();
+        Rooms[Rooms.Count / 2] = new FountainRoom();
+
+        int seedCount = sizeEnum switch
+        {
+            SizeEnum.Small => 1,
+            SizeEnum.Medium => 2,
+            SizeEnum.Large => 4
+        };
+
+        for (int i = 0; i < seedCount; i++)
+        {
+            SeedRoom<PitRoom>(new());
+            SeedRoom<AmarokRoom>(new());
+        }
+    }
+
+    // My original code
+    //private void SeedRoom<T>(T room) where T : BaseRoom
+    //{
+    //    var randomIndex = Random.Shared.Next(1, Rooms.Count);
+    //    var randomRoom = Rooms[randomIndex];
+
+    //    while (randomRoom is not EmptyRoom || !Rooms.Any(x => x is EmptyRoom))
+    //    {
+    //        randomIndex = Random.Shared.Next(1, Rooms.Count);
+    //        randomRoom = Rooms[randomIndex];
+    //    }
+
+    //    Rooms[randomIndex] = room;
+    //}
+
+    // Code suggested by ChatGPT. Actually a big improvement.
+    private void SeedRoom<T>(T room) where T : BaseRoom
+    {
+        var emptyRoomIndices = Rooms
+            .Select((r, i) => new { Room = r, Index = i })
+            .Where(x => x.Room is EmptyRoom)
+            .Select(x => x.Index)
+            .ToList();
+
+        if (emptyRoomIndices.Count == 0) return; 
+
+        int randomIndex = Random.Shared.Next(emptyRoomIndices.Count);
+        Rooms[emptyRoomIndices[randomIndex]] = room;
     }
 }
 
