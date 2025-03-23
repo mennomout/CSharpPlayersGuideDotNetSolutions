@@ -1,5 +1,4 @@
 ﻿using Helpers;
-using System.Diagnostics.Contracts;
 
 namespace Challenges.Part_2.Level_24._15_Puzzle;
 

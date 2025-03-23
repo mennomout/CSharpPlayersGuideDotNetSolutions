@@ -1,6 +1,4 @@
-﻿using Helpers.Global_Enums;
-
-namespace Challenges.Part_2.Level_24._15_Puzzle;
+﻿namespace Challenges.Part_2.Level_24._15_Puzzle;
 
 public class FifteenPuzzle
 {

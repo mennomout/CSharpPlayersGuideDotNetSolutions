@@ -1,6 +1,4 @@
-﻿using System.ComponentModel;
-
-namespace Challenges.Part_2.Level_24;
+﻿namespace Challenges.Part_2.Level_24;
 
 public class Color
 {

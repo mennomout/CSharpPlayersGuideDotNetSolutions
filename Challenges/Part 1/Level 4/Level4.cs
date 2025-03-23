@@ -1,5 +1,4 @@
 ﻿using Challenges;
-using ChallengesPart1Level1;
 
 namespace ChallengesPart1Level4;
 

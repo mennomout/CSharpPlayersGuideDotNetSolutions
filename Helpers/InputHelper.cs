@@ -1,6 +1,4 @@
-﻿using System.Globalization;
-
-namespace Helpers;
+﻿namespace Helpers;
 
 public static class InputHelper
 {

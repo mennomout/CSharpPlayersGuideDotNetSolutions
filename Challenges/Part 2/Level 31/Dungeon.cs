@@ -34,11 +34,12 @@ public class Dungeon
         return Rooms[PlayerPosition];
     }
 
+    public Coordinates GetPlayerCoordinates() => new(PlayerPosition % XLenght, (int)Math.Floor((double)PlayerPosition / XLenght));
+
     public FountainRoom? GetFountainRoom() => Rooms.FirstOrDefault(x => x is FountainRoom) as FountainRoom;
 
     public bool IsInBounds(int index) => index >= 0 && index < Rooms.Count;
 
-    // This is bugged. GetAdjacentRooms also returns rooms that are diagonal but those are not legal to move to. It's not a big issue since the input should not allow for diagonal choices at the moment.
     public bool IsLegalMove(BaseRoom currentRoom, int index) => IsInBounds(index) && GetAdjacentRooms(currentRoom).Contains(Rooms[index]);
 
     public bool TryMovePlayer(int newPlayerPosition)
@@ -51,13 +52,6 @@ public class Dungeon
         PlayerPosition = newPlayerPosition;
 
         return true;
-    }
-
-    public bool TryFindRoomByType(Type type, out BaseRoom? room)
-    {
-        room = Rooms.FirstOrDefault(x => x.GetType() == type);
-
-        return room != null;
     }
 
     public IList<BaseRoom> GetAdjacentRooms(BaseRoom room)
@@ -112,27 +106,12 @@ public class Dungeon
 
         for (int i = 0; i < seedCount; i++)
         {
+            SeedRoom<MaelstromRoom>(new());
             SeedRoom<PitRoom>(new());
             SeedRoom<AmarokRoom>(new());
         }
     }
 
-    // My original code
-    //private void SeedRoom<T>(T room) where T : BaseRoom
-    //{
-    //    var randomIndex = Random.Shared.Next(1, Rooms.Count);
-    //    var randomRoom = Rooms[randomIndex];
-
-    //    while (randomRoom is not EmptyRoom || !Rooms.Any(x => x is EmptyRoom))
-    //    {
-    //        randomIndex = Random.Shared.Next(1, Rooms.Count);
-    //        randomRoom = Rooms[randomIndex];
-    //    }
-
-    //    Rooms[randomIndex] = room;
-    //}
-
-    // Code suggested by ChatGPT. Actually a big improvement.
     private void SeedRoom<T>(T room) where T : BaseRoom
     {
         var emptyRoomIndices = Rooms

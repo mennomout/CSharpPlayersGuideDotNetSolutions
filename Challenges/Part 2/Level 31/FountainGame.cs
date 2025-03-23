@@ -7,12 +7,14 @@ namespace Challenges.Part_2.Level_31;
 public class FountainGame
 {
     private readonly Dungeon _dungeon;
+    private readonly Adventurer _adventurer;
 
     public FountainGame(SizeEnum sizeEnum)
     {
         var axisLenght = GetGridAxesLenght(sizeEnum);
         _dungeon = new(axisLenght, axisLenght);
         _dungeon.SeedRooms(sizeEnum);
+        _adventurer = new();
     }
 
     public void Run()
@@ -26,13 +28,13 @@ public class FountainGame
             return;
         }
 
-        while (!fountainRoom.IsActivated)
+        while (!fountainRoom.IsActivated && !_adventurer.IsDeath)
         {
             Console.Clear();
 
             if (_dungeon.GetPlayerRoom() is BaseRoom room)
             {
-                Console.WriteLine($"Your position: ");
+                Console.WriteLine($"Your position: {_dungeon.GetPlayerCoordinates()}");
                 room.Enter(_dungeon);
                 Console.WriteLine(room.Description);
 
@@ -43,13 +45,13 @@ public class FountainGame
 
                 PrintWarnings(_dungeon.GetAdjacentRooms(room));
 
-                int nextRoomIndex = GetNextRoomByMoveDirection(_dungeon);
+                int nextRoomIndex = _adventurer.GetNextRoomByMoveDirection(_dungeon);
 
                 while (!_dungeon.IsLegalMove(room, nextRoomIndex))
                 {
                     Console.WriteLine("You cannot move there, try another direction.");
 
-                    nextRoomIndex = GetNextRoomByMoveDirection(_dungeon);
+                    nextRoomIndex = _adventurer.GetNextRoomByMoveDirection(_dungeon);
                 }
 
                 _dungeon.TryMovePlayer(nextRoomIndex);
@@ -68,6 +70,11 @@ public class FountainGame
         {
             Console.WriteLine("You can smell the rotten stench of an Amarok in a nearby room.");
         }
+
+        if (adjacentRooms.Any(x => x is MaelstromRoom))
+        {
+            Console.WriteLine("You hear the growling and groaning of a maelstrom nearby.");
+        }
     }
 
     private int GetGridAxesLenght(SizeEnum size) => size switch
@@ -77,16 +84,4 @@ public class FountainGame
         SizeEnum.Large => 8
     };
 
-    private int GetNextRoomByMoveDirection(Dungeon dungeon)
-    {
-        var direction = InputHelper.GetChoiceFromEnum<DirectionEnum>();
-
-        return direction switch
-        {
-            DirectionEnum.Up => dungeon.PlayerPosition - dungeon.XLenght,
-            DirectionEnum.Down => dungeon.PlayerPosition + dungeon.XLenght,
-            DirectionEnum.Left => dungeon.PlayerPosition - 1,
-            DirectionEnum.Right => dungeon.PlayerPosition + 1,
-        };
-    }
 }
