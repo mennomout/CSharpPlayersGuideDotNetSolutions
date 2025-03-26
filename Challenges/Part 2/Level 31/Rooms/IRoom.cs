@@ -2,5 +2,5 @@
 
 public interface IRoom
 {
-    public void Enter(Dungeon dungeon);
+    public void Enter(Dungeon dungeon, Adventurer adventurer);
 }

@@ -2,7 +2,8 @@
 
 public class PitRoom() : BaseRoom("Pit", "You fell into a pit... Should have brought that ten foot pole. GAME OVER.")
 {
-    public override void Enter(Dungeon dungeon)
+    public override void Enter(Dungeon dungeon, Adventurer adventurer)
     {
+        adventurer.Kill();
     }
 }

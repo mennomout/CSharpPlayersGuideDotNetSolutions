@@ -31,32 +31,64 @@ public class FountainGame
         while (!fountainRoom.IsActivated && !_adventurer.IsDeath)
         {
             Console.Clear();
+            Console.WriteLine($"Your position: {_dungeon.GetCoordinates(_adventurer.Position)}");
+            Console.WriteLine($"You have {_adventurer.ArrowCount} arrows in your quiver.");
 
-            if (_dungeon.GetPlayerRoom() is BaseRoom room)
+            if (_dungeon.GetRoom(_adventurer.Position) is BaseRoom room)
             {
-                Console.WriteLine($"Your position: {_dungeon.GetPlayerCoordinates()}");
-                room.Enter(_dungeon);
+                var adjacentRooms = _dungeon.GetAdjacentRooms(room);
+
+                PrintWarnings(adjacentRooms);
+                GetAdventurerInput(room, adjacentRooms);
                 Console.WriteLine(room.Description);
-
-                if (room is PitRoom || room is AmarokRoom)
-                {
-                    break;
-                }
-
-                PrintWarnings(_dungeon.GetAdjacentRooms(room));
-
-                int nextRoomIndex = _adventurer.GetNextRoomByMoveDirection(_dungeon);
-
-                while (!_dungeon.IsLegalMove(room, nextRoomIndex))
-                {
-                    Console.WriteLine("You cannot move there, try another direction.");
-
-                    nextRoomIndex = _adventurer.GetNextRoomByMoveDirection(_dungeon);
-                }
-
-                _dungeon.TryMovePlayer(nextRoomIndex);
+                room.Enter(_dungeon, _adventurer);
             }    
         }
+    }
+
+    private void GetAdventurerInput(BaseRoom room, IList<BaseRoom> adjacentRooms)
+    {
+        if (adjacentRooms.Any(x => x is AmarokRoom))
+        {
+            Console.WriteLine("Do you wish to use your bow and shoot an arrow?");
+
+            var choice = InputHelper.GetRequiredInput(["yes", "no"])?.ToLower();
+
+            if (!string.IsNullOrWhiteSpace(choice) && choice == "yes")
+            {
+                var directionIndex = GetIndexByDirectionInput(room);
+
+                if (_dungeon.Rooms[directionIndex] is AmarokRoom amarokRoom)
+                {
+                    amarokRoom.Hit();
+                    Console.WriteLine("You hear a scream!");
+                }
+            }
+        }
+
+        int nextRoomIndex = GetIndexByDirectionInput(room);
+
+        _adventurer.Move(nextRoomIndex);
+    }
+
+    private int GetIndexByDirectionInput(BaseRoom room)
+    {
+        var roomIndex = InputHelper.GetChoiceFromEnum<DirectionEnum>() switch
+        {
+            DirectionEnum.Up => _adventurer.Position - _dungeon.XLenght,
+            DirectionEnum.Down => _adventurer.Position + _dungeon.XLenght,
+            DirectionEnum.Left => _adventurer.Position - 1,
+            DirectionEnum.Right => _adventurer.Position + 1,
+        };
+
+        if (!_dungeon.IsLegalMove(room, roomIndex))
+        {
+            Console.WriteLine("That is not a valid direction.");
+
+            return GetIndexByDirectionInput(room);
+        }
+
+        return roomIndex;
     }
 
     private void PrintWarnings(IList<BaseRoom> adjacentRooms)

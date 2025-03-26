@@ -4,7 +4,7 @@ public class FountainRoom() : BaseRoom("Fountain", "You hear the rushing waters 
 {
     public bool IsActivated { get; private set; }
 
-    public override void Enter(Dungeon dungeon)
+    public override void Enter(Dungeon dungeon, Adventurer adventurer)
     {
         IsActivated = true;
     }

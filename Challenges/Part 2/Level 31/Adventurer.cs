@@ -7,17 +7,11 @@ public class Adventurer
 {
     public string Name => "Adventurer";
     public bool IsDeath { get; private set; }
+    public int Position { get; private set; }
+    public int ArrowCount { get; private set; } = 5;
 
-    public int GetNextRoomByMoveDirection(Dungeon dungeon)
-    {
-        var direction = InputHelper.GetChoiceFromEnum<DirectionEnum>();
-
-        return direction switch
-        {
-            DirectionEnum.Up => dungeon.PlayerPosition - dungeon.XLenght,
-            DirectionEnum.Down => dungeon.PlayerPosition + dungeon.XLenght,
-            DirectionEnum.Left => dungeon.PlayerPosition - 1,
-            DirectionEnum.Right => dungeon.PlayerPosition + 1,
-        };
-    }
+    public void Shoot() => ArrowCount--;
+    public void RetrieveArrow() => ArrowCount++;
+    public void Kill() => IsDeath = true;
+    public void Move(int newPosition) => Position = newPosition;
 }

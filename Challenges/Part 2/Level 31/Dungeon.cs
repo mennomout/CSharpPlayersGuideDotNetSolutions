@@ -22,37 +22,24 @@ public class Dungeon
     public int XLenght { get; init; }
     public int YLenght { get; init; }
     public List<BaseRoom> Rooms { get; private set; } = [];
-    public int PlayerPosition { get; private set; }
 
-    public BaseRoom? GetPlayerRoom()
+    public BaseRoom? GetRoom(int index)
     {
-        if (!IsInBounds(PlayerPosition))
+        if (!IsInBounds(index))
         {
             return null;
         }
 
-        return Rooms[PlayerPosition];
+        return Rooms[index];
     }
 
-    public Coordinates GetPlayerCoordinates() => new(PlayerPosition % XLenght, (int)Math.Floor((double)PlayerPosition / XLenght));
+    public Coordinates GetCoordinates(int index) => new(index % XLenght, (int)Math.Floor((double)index / XLenght));
 
     public FountainRoom? GetFountainRoom() => Rooms.FirstOrDefault(x => x is FountainRoom) as FountainRoom;
 
     public bool IsInBounds(int index) => index >= 0 && index < Rooms.Count;
 
     public bool IsLegalMove(BaseRoom currentRoom, int index) => IsInBounds(index) && GetAdjacentRooms(currentRoom).Contains(Rooms[index]);
-
-    public bool TryMovePlayer(int newPlayerPosition)
-    {
-        if (!IsInBounds(newPlayerPosition))
-        {
-            return false;
-        }
-
-        PlayerPosition = newPlayerPosition;
-
-        return true;
-    }
 
     public IList<BaseRoom> GetAdjacentRooms(BaseRoom room)
     {

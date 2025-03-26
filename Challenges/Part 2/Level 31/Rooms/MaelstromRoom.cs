@@ -2,8 +2,8 @@
 
 public class MaelstromRoom() : BaseRoom("Maelstrom room", "You are swept away by a Maelstrom.")
 {
-    public override void Enter(Dungeon dungeon)
+    public override void Enter(Dungeon dungeon, Adventurer adventurer)
     {
-        dungeon.TryMovePlayer(Random.Shared.Next(dungeon.XLenght));
+        adventurer.Move(Random.Shared.Next(dungeon.Rooms.Count));
     }
 }

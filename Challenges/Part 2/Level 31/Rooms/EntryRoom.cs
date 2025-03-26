@@ -2,7 +2,7 @@
 
 public class EntryRoom() : BaseRoom("The entry room", "You can sense light coming from outside the cavern when in this room.")
 {
-    public override void Enter(Dungeon dungeon)
+    public override void Enter(Dungeon dungeon, Adventurer adventurer)
     {
     }
 }
