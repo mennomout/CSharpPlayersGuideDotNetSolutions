@@ -22,6 +22,7 @@ public class Dungeon
     public int XLenght { get; init; }
     public int YLenght { get; init; }
     public List<BaseRoom> Rooms { get; private set; } = [];
+    public FountainRoom? FountainRoom => Rooms.FirstOrDefault(x => x is FountainRoom) as FountainRoom;
 
     public BaseRoom? GetRoom(int index)
     {
@@ -34,8 +35,6 @@ public class Dungeon
     }
 
     public Coordinates GetCoordinates(int index) => new(index % XLenght, (int)Math.Floor((double)index / XLenght));
-
-    public FountainRoom? GetFountainRoom() => Rooms.FirstOrDefault(x => x is FountainRoom) as FountainRoom;
 
     public bool IsInBounds(int index) => index >= 0 && index < Rooms.Count;
 

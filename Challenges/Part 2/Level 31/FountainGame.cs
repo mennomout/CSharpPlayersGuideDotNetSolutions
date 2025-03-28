@@ -19,13 +19,9 @@ public class FountainGame
 
     public void Run()
     {
-        FountainRoom? fountainRoom = _dungeon.GetFountainRoom();
-        
-        if (fountainRoom == null)
+        if (_dungeon.FountainRoom == null)
         {
-            Console.WriteLine("Something went wrong and the dungeon was not configured properly. No fountain room was created during initialisation of the dungeon or it could not be found.");
-
-            return;
+            _dungeon.SeedRoom(new FountainRoom());
         }
 
         do
@@ -39,7 +35,7 @@ public class FountainGame
                 Console.WriteLine(room.Description);
                 room.Enter(_dungeon, _adventurer);
 
-                if (GameEnded(fountainRoom))
+                if (GameEnded())
                 {
                     break;  
                 }
@@ -48,12 +44,19 @@ public class FountainGame
                 PrintWarnings(adjacentRooms);
                 GetAdventurerInput(adjacentRooms);
             }
-        } while (!GameEnded(fountainRoom));
+        } while (!GameEnded());
     }
 
-    private bool GameEnded(FountainRoom fountainRoom) => fountainRoom.IsActivated || _adventurer.IsDeath;
+    private bool GameEnded()
+    {
+        if (_dungeon.FountainRoom == null)
+        {
+            _dungeon.SeedRoom(new FountainRoom());
+        }
 
-    
+        return _dungeon.FountainRoom.IsActivated || _adventurer.IsDeath;
+    }
+
     private void GetAdventurerInput(IList<BaseRoom> adjacentRooms)
     {
         if (adjacentRooms.Any(x => x is AmarokRoom a && !a.IsDeath))
