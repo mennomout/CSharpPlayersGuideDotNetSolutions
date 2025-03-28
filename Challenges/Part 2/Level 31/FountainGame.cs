@@ -34,7 +34,6 @@ public class FountainGame
             Console.WriteLine($"Your position: {_dungeon.GetCoordinates(_adventurer.Position)}");
             Console.WriteLine($"You have {_adventurer.ArrowCount} arrows in your quiver.");
 
-            // This order is not correct in combination with the GetAdventurerInput method.
             if (_dungeon.GetRoom(_adventurer.Position) is BaseRoom room)
             {
                 Console.WriteLine(room.Description);
