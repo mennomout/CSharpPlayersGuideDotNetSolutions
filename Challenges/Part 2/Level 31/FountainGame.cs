@@ -28,27 +28,36 @@ public class FountainGame
             return;
         }
 
-        while (!fountainRoom.IsActivated && !_adventurer.IsDeath)
+        do
         {
             Console.Clear();
             Console.WriteLine($"Your position: {_dungeon.GetCoordinates(_adventurer.Position)}");
             Console.WriteLine($"You have {_adventurer.ArrowCount} arrows in your quiver.");
 
+            // This order is not correct in combination with the GetAdventurerInput method.
             if (_dungeon.GetRoom(_adventurer.Position) is BaseRoom room)
             {
-                var adjacentRooms = _dungeon.GetAdjacentRooms(room);
-
-                PrintWarnings(adjacentRooms);
-                GetAdventurerInput(room, adjacentRooms);
                 Console.WriteLine(room.Description);
                 room.Enter(_dungeon, _adventurer);
-            }    
-        }
+
+                if (GameEnded(fountainRoom))
+                {
+                    break;  
+                }
+
+                var adjacentRooms = _dungeon.GetAdjacentRooms(_adventurer.Position);
+                PrintWarnings(adjacentRooms);
+                GetAdventurerInput(adjacentRooms);
+            }
+        } while (!GameEnded(fountainRoom));
     }
 
-    private void GetAdventurerInput(BaseRoom room, IList<BaseRoom> adjacentRooms)
+    private bool GameEnded(FountainRoom fountainRoom) => fountainRoom.IsActivated || _adventurer.IsDeath;
+
+    
+    private void GetAdventurerInput(IList<BaseRoom> adjacentRooms)
     {
-        if (adjacentRooms.Any(x => x is AmarokRoom))
+        if (adjacentRooms.Any(x => x is AmarokRoom a && !a.IsDeath))
         {
             Console.WriteLine("Do you wish to use your bow and shoot an arrow?");
 
@@ -56,7 +65,7 @@ public class FountainGame
 
             if (!string.IsNullOrWhiteSpace(choice) && choice == "yes")
             {
-                var directionIndex = GetIndexByDirectionInput(room);
+                var directionIndex = GetIndexByDirectionInput(_adventurer.Position);
 
                 if (_dungeon.Rooms[directionIndex] is AmarokRoom amarokRoom)
                 {
@@ -66,12 +75,12 @@ public class FountainGame
             }
         }
 
-        int nextRoomIndex = GetIndexByDirectionInput(room);
+        int nextRoomIndex = GetIndexByDirectionInput(_adventurer.Position);
 
         _adventurer.Move(nextRoomIndex);
     }
 
-    private int GetIndexByDirectionInput(BaseRoom room)
+    private int GetIndexByDirectionInput(int currentRoomIndex)
     {
         var roomIndex = InputHelper.GetChoiceFromEnum<DirectionEnum>() switch
         {
@@ -81,11 +90,11 @@ public class FountainGame
             DirectionEnum.Right => _adventurer.Position + 1,
         };
 
-        if (!_dungeon.IsLegalMove(room, roomIndex))
+        if (!_dungeon.IsLegalMove(currentRoomIndex, roomIndex))
         {
             Console.WriteLine("That is not a valid direction.");
 
-            return GetIndexByDirectionInput(room);
+            return GetIndexByDirectionInput(currentRoomIndex);
         }
 
         return roomIndex;
@@ -98,7 +107,7 @@ public class FountainGame
             Console.WriteLine("You feel a draft. There is a pit in a nearby room.");
         }
 
-        if (adjacentRooms.Any(x => x is AmarokRoom))
+        if (adjacentRooms.Any(x => x is AmarokRoom amarokRoom && !amarokRoom.IsDeath))
         {
             Console.WriteLine("You can smell the rotten stench of an Amarok in a nearby room.");
         }
@@ -115,5 +124,4 @@ public class FountainGame
         SizeEnum.Medium => 6,
         SizeEnum.Large => 8
     };
-
 }

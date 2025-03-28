@@ -39,41 +39,40 @@ public class Dungeon
 
     public bool IsInBounds(int index) => index >= 0 && index < Rooms.Count;
 
-    public bool IsLegalMove(BaseRoom currentRoom, int index) => IsInBounds(index) && GetAdjacentRooms(currentRoom).Contains(Rooms[index]);
+    public bool IsLegalMove(int currentIndex, int moveIndex) => IsInBounds(moveIndex) && GetAdjacentRooms(currentIndex).Contains(Rooms[moveIndex]);
 
-    public IList<BaseRoom> GetAdjacentRooms(BaseRoom room)
+    public IList<BaseRoom> GetAdjacentRooms(int currentIndex)
     {
-        var index = Rooms.IndexOf(room);
         var adjacentRooms = new List<BaseRoom>();
 
         // Left room 
-        if (index - 1 >= 0 && index.IsRemainderNotZero(XLenght)) adjacentRooms.Add(Rooms[index - 1]);
+        if (currentIndex - 1 >= 0 && currentIndex.IsRemainderNotZero(XLenght)) adjacentRooms.Add(Rooms[currentIndex - 1]);
 
         // Right room
-        if (index + 1 < Rooms.Count && (index + 1).IsRemainderNotZero(XLenght)) adjacentRooms.Add(Rooms[index + 1]);
+        if (currentIndex + 1 < Rooms.Count && (currentIndex + 1).IsRemainderNotZero(XLenght)) adjacentRooms.Add(Rooms[currentIndex + 1]);
 
         // Bottom room
-        if (index + XLenght < Rooms.Count)
+        if (currentIndex + XLenght < Rooms.Count)
         {
-            adjacentRooms.Add(Rooms[index + XLenght]);
+            adjacentRooms.Add(Rooms[currentIndex + XLenght]);
 
             // Bottom left room
-            if ((index + XLenght).IsRemainderNotZero(XLenght)) adjacentRooms.Add(Rooms[index + (XLenght - 1)]);
+            if ((currentIndex + XLenght).IsRemainderNotZero(XLenght)) adjacentRooms.Add(Rooms[currentIndex + (XLenght - 1)]);
 
             // Bottom right room
-            if ((index + 1 + XLenght) < Rooms.Count && (index + 1 + XLenght).IsRemainderNotZero(XLenght)) adjacentRooms.Add(Rooms[index + (XLenght + 1)]);
+            if ((currentIndex + 1 + XLenght) < Rooms.Count && (currentIndex + 1 + XLenght).IsRemainderNotZero(XLenght)) adjacentRooms.Add(Rooms[currentIndex + (XLenght + 1)]);
         }
 
         // Top room
-        if (index - XLenght >= 0)
+        if (currentIndex - XLenght >= 0)
         {
-            adjacentRooms.Add(Rooms[index - XLenght]);
+            adjacentRooms.Add(Rooms[currentIndex - XLenght]);
 
             // Top left room. 
-            if (index - (XLenght + 1) >= 0 && (index - XLenght).IsRemainderNotZero(XLenght)) adjacentRooms.Add(Rooms[index - (XLenght + 1)]);
+            if (currentIndex - (XLenght + 1) >= 0 && (currentIndex - XLenght).IsRemainderNotZero(XLenght)) adjacentRooms.Add(Rooms[currentIndex - (XLenght + 1)]);
 
             // Top right room. 
-            if ((index - (XLenght - 1)).IsRemainderNotZero(XLenght)) adjacentRooms.Add(Rooms[index - (XLenght - 1)]);
+            if ((currentIndex - (XLenght - 1)).IsRemainderNotZero(XLenght)) adjacentRooms.Add(Rooms[currentIndex - (XLenght - 1)]);
         }
 
         return adjacentRooms;
@@ -99,7 +98,7 @@ public class Dungeon
         }
     }
 
-    private void SeedRoom<T>(T room) where T : BaseRoom
+    public void SeedRoom<T>(T room) where T : BaseRoom
     {
         var emptyRoomIndices = Rooms
             .Select((r, i) => new { Room = r, Index = i })
