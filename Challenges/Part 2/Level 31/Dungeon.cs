@@ -40,7 +40,7 @@ public class Dungeon
 
     public bool IsLegalMove(int currentIndex, int moveIndex) => IsInBounds(moveIndex) && GetAdjacentRooms(currentIndex).Contains(Rooms[moveIndex]);
 
-    public IList<BaseRoom> GetAdjacentRooms(int currentIndex)
+    public List<BaseRoom> GetAdjacentRooms(int currentIndex)
     {
         var adjacentRooms = new List<BaseRoom>();
 

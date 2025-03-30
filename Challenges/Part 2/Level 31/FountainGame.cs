@@ -102,22 +102,11 @@ public class FountainGame
         return roomIndex;
     }
 
-    private void PrintWarnings(IList<BaseRoom> adjacentRooms)
+    private void PrintWarnings(List<BaseRoom> adjacentRooms)
     {
-        if (adjacentRooms.Any(x => x is PitRoom))
-        {
-            Console.WriteLine("You feel a draft. There is a pit in a nearby room.");
-        }
-
-        if (adjacentRooms.Any(x => x is AmarokRoom amarokRoom && !amarokRoom.IsDeath))
-        {
-            Console.WriteLine("You can smell the rotten stench of an Amarok in a nearby room.");
-        }
-
-        if (adjacentRooms.Any(x => x is MaelstromRoom))
-        {
-            Console.WriteLine("You hear the growling and groaning of a maelstrom nearby.");
-        }
+        if (adjacentRooms.Any(x => x is PitRoom)) Console.WriteLine("You feel a draft. There is a pit in a nearby room.");
+        if (adjacentRooms.Any(x => x is AmarokRoom amarokRoom && !amarokRoom.IsDeath)) Console.WriteLine("You can smell the rotten stench of an Amarok in a nearby room.");
+        if (adjacentRooms.Any(x => x is MaelstromRoom)) Console.WriteLine("You hear the growling and groaning of a maelstrom nearby.");
     }
 
     private int GetGridAxesLenght(SizeEnum size) => size switch
